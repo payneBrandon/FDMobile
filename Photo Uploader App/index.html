@@ -26,7 +26,8 @@ under the License.
         <script src="js/jquery.js"></script>
         <script src="cordova.js"></script>
         <script src="js/main.js"></script>
-        <!--<script src="js/Login.js"></script>-->
+        <script src="js/Controllers/MainController.js"></script>
+        <script src="js/Controllers/FormController.js"></script>
     </head>
     <body>
         <div id="divWrapper" ng-controller="FDCntrl">
@@ -76,10 +77,59 @@ under the License.
             </div>
 
             <div id="divFormSelection">
-                <select type="text" id="ddlForms" ng-model="selectedForm" ng-options="form.FormKey as form.DisplayName for form in forms">
-                    <option value="">--Select Form--</option>
-                </select>
+                <h1>Select a Form</h1>
+                <table>
+                    <tr>
+                        <td>Forms:</td>
+                        <td>
+                            <select type="text" id="ddlForms" ng-model="selectedForm" ng-options="form.FormKey as form.DisplayName for form in forms"
+                                    ng-change="showForm()">
+                                <option value="">--Select Form--</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
             </div>
+
+            <form>
+                <div id="divFormEntry" ng-controller="formCntrl">
+                    <h1>{{myForm.DisplayName}}</h1>
+                    <div ng-repeat="table in myForm.FormTables">
+                        <div>
+                            <table class="formTable">
+                                <tr ng-repeat="ff in table.FormFields">
+                                    <td class="tdFieldLabel">
+                                        {{ff.Label}}
+                                    </td>
+                                    <td class="tdFieldInput" ng-switch="ff.FieldType">
+                                        <label ng-switch-when="Static" ng-model="ff['Value']">{{ff.DefaultValue}}</label>
+
+                                        <div ng-switch-when="Text" ng-switch="ff.IsRichText">
+                                            <input type="text" ng-switch-when="false" ng-model="ff['Value']" value="ff.DefaultValue" ng-required="ff.IsRequired" />
+                                            
+                                            <textarea ng-switch-when="true" ng-model="ff['Value']" rows="3" ng-required="ff.IsRequired">{{ff.DefaultValue}}</textarea>
+                                        </div>
+
+                                        <input type="date" ng-switch-when="Date" ng-model="ff['Value']" value="ff.DefaultValue" ng-required="ff.IsRequired" />
+
+                                        <div ng-switch-when="CheckBoxList">
+                                            <div ng-repeat="co in ff.ComboOptions">
+                                                <input type="checkbox" ng-model="co.IsSelected" value="co.Name" class="checkBoxList" id="{{co.Key}}"/>
+                                                <label for="{{co.Key}}">{{co.Name}}</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <select ng-switch-when="Droplist" ng-model="ff['Value']" ng-options="co.Key as co.Name for co in ff.ComboOptions"></select>
+
+                                        <input type="number" ng-switch-when="Decimal" ng-model="ff['Value']" value="ff.DefaultValue" ng-required="ff.IsRequired"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <input type="submit" value="Submit" ng-click="submitForm()" class="formSubmit" />
+                </div>
+            </form>
         </div>
     </body>
 </html>
