@@ -21,16 +21,19 @@ under the License.
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link href="AngularBusy/angular-busy.css" rel="stylesheet" />
         <title>Photo Tool: Mobile</title>
-        <script src="js/angular.min.js"></script>
         <script src="js/jquery.js"></script>
         <script src="cordova.js"></script>
+        <script src="js/Angular/angular.js"></script>
+        <script src="AngularBusy/angular-animate.js"></script>
+        <script src="AngularBusy/angular-busy.js"></script>
         <script src="js/main.js"></script>
         <script src="js/Controllers/MainController.js"></script>
         <script src="js/Controllers/FormController.js"></script>
     </head>
     <body>
-        <div id="divWrapper" ng-controller="FDCntrl">
+        <div id="divWrapper" ng-controller="FDCntrl" cg-busy="promise">
             <div id="divLogin">
                 <div id="divLogoContainer">
                     <div id="divLogo"></div>
@@ -91,11 +94,11 @@ under the License.
                 </table>
             </div>
 
-            <form>
+            <form name="formInputForm">
                 <div id="divFormEntry" ng-controller="formCntrl">
                     <h1>{{myForm.DisplayName}}</h1>
-                    <div ng-repeat="table in myForm.FormTables">
-                        <div>
+                    <div ng-repeat="table in myForm.FormTables" ng-switch="myForm.TableName">
+                        <div ng-switch-when="FormGridRowValue">
                             <table class="formTable">
                                 <tr ng-repeat="ff in table.FormFields">
                                     <td class="tdFieldLabel">
@@ -106,7 +109,7 @@ under the License.
 
                                         <div ng-switch-when="Text" ng-switch="ff.IsRichText">
                                             <input type="text" ng-switch-when="false" ng-model="ff['Value']" value="ff.DefaultValue" ng-required="ff.IsRequired" />
-                                            
+
                                             <textarea ng-switch-when="true" ng-model="ff['Value']" rows="3" ng-required="ff.IsRequired">{{ff.DefaultValue}}</textarea>
                                         </div>
 
@@ -114,11 +117,14 @@ under the License.
 
                                         <div ng-switch-when="CheckBoxList">
                                             <div ng-repeat="co in ff.ComboOptions">
-                                                <input type="checkbox" ng-model="co.IsSelected" value="co.Name" class="checkBoxList" id="{{co.Key}}"/>
-                                                <label for="{{co.Key}}">{{co.Name}}</label>
+                                                <label>
+                                                    <input type="checkbox" ng-model="co.IsSelected" value="co.Name" class="checkBoxList" name="{{co.Key}}" id="{{co.Key}}"/>
+                                                    {{co.Name}}
+                                                </label>
+                                                <!--<label for="{{co.Key}}"></label>-->
                                             </div>
                                         </div>
-                                        
+
                                         <select ng-switch-when="Droplist" ng-model="ff['Value']" ng-options="co.Key as co.Name for co in ff.ComboOptions"></select>
 
                                         <input type="number" ng-switch-when="Decimal" ng-model="ff['Value']" value="ff.DefaultValue" ng-required="ff.IsRequired"/>
@@ -126,8 +132,9 @@ under the License.
                                 </tr>
                             </table>
                         </div>
+                        <div ng-switch-when="FormListColumnValue"></div>
                     </div>
-                    <input type="submit" value="Submit" ng-click="submitForm()" class="formSubmit" />
+                    <input type="submit" value="Submit" ng-click="submitForm()" class="standardButton wideButton" />
                 </div>
             </form>
         </div>

@@ -1,3 +1,5 @@
+var origData = {};
+
 app.controller("formCntrl", function ($scope, $http) {
     $scope.myForm = {};
     $scope.formClick = function () {
@@ -12,6 +14,7 @@ app.controller("formCntrl", function ($scope, $http) {
             else {
                 if ($scope.forms[i].FormKey == $scope.selectedForm) {
                     $scope.myForm = $scope.forms[i];
+                    origData = angular.copy($scope.forms[i]);
                 }
             }
         }
@@ -19,17 +22,25 @@ app.controller("formCntrl", function ($scope, $http) {
     
     $scope.submitForm = function() {
         if ($('form')[0].checkValidity()) {
-            $http({
-                      url: baseURL + "/UploadForm",
-                      method: "POST",
-                      data: {portalKey: $scope.selectedProject, userName: $scope.userName, mf: $scope.myForm},
-                      headers: {'Authentication': $scope.token}
-                  }).
+            $scope.promise = $http({
+                                       url: baseURL + "/UploadForm",
+                                       method: "POST",
+                                       data: {portalKey: $scope.selectedProject, userName: $scope.userName, mf: $scope.myForm},
+                                       headers: {'Authentication': $scope.token}
+                                   }).
             success(function(data) {
-                alert(data); 
+                if (data.UploadFormResult == true) {
+                    alert('Form Successfully Uploaded!');
+                    //clean up ui
+                    $scope.formInputForm.$setPristine();
+                    $scope.myForm = origData;
+                }
+                else {
+                    alert('Failed to upload form');
+                }
             }).
             error(function(data) {
-                alert('failed to upload form');
+                alert('Failed to upload form');
             });
         }
     };

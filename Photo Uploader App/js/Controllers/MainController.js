@@ -6,6 +6,7 @@ app.controller("FDCntrl", function ($scope, $http) {
     
     $scope.forms = [];
     $scope.selectedForm = null;//formKey
+    $scope.promise = null;
     
     $scope.LoginUser = 
     function() {
@@ -22,22 +23,22 @@ app.controller("FDCntrl", function ($scope, $http) {
         today = mm + '/' + dd + '/' + yyyy;
         $scope.userName = $("#txbUsername").val();
         var passWord = $("#txbPassword").val();
-        $http({
-                  method: 'GET',
-                  url: loginURL + "/LoginUser",//"http://localhost/MobileLoginService/MobileLoginService.svc/LoginUser",//
-                  params: { userName: $scope.userName, password: passWord},
-              }).
+        $scope.promise = $http({
+                                   method: 'GET',
+                                   url: loginURL + "/LoginUser",//"http://localhost/MobileLoginService/MobileLoginService.svc/LoginUser",//
+                                   params: { userName: $scope.userName, password: passWord},
+                               }).
         success(function(data) {
             $('#divLogin').hide();
             $('#divSiteSelection').show();
             if (data.d != null && data.d != -1) {
-                $scope.token = data.d;                       
-                $http({
-                          method:"GET",
-                          url: baseURL + "/GetProjects",//"http://localhost/FDMobileService/FDMobileService.svc/GetProjects",//
-                          headers: { 'Authentication': $scope.token },
-                          params: {userName: $scope.userName},
-                      }).
+                $scope.token = data.d;   
+                $scope.promise = $http({
+                                           method:"GET",
+                                           url: baseURL + "/GetProjects",//"http://localhost/FDMobileService/FDMobileService.svc/GetProjects",//
+                                           headers: { 'Authentication': $scope.token },
+                                           params: {userName: $scope.userName},
+                                       }).
                 success(function(data) {
                     $scope.projects = data;
                 });
@@ -56,20 +57,19 @@ app.controller("FDCntrl", function ($scope, $http) {
     $scope.getForms = function() {
         $('#divFormSelection').show();
         $('#divSiteSelection').hide();
-        $http.get(baseURL + "/GetUserForms", {
-                      headers: {'Authentication': $scope.token},
-                      params: {portalKey: $scope.selectedProject, userName: $scope.userName}
-                  }).
+        $scope.promise = $http.get(baseURL + "/GetUserForms", {
+                                       headers: {'Authentication': $scope.token},
+                                       params: {portalKey: $scope.selectedProject, userName: $scope.userName}
+                                   }).
         success(function(data) {
             $scope.forms = data;
         });
     };
     
-    $scope.showForm = function(){
+    $scope.showForm = function() {
         $('#divFormSelection').hide();
         $('#divFormEntry').show();
         $scope.$broadcast('formChanged');
     };
 });
-
 //app.FDCntrl.$inject = ['$scope','$http','app.formSharedService'];
