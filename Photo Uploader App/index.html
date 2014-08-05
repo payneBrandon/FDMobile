@@ -28,6 +28,8 @@ under the License.
         <script src="js/Angular/angular.js"></script>
         <script src="AngularBusy/angular-animate.js"></script>
         <script src="AngularBusy/angular-busy.js"></script>
+        <script src="kendo/js/kendo.mobile.min.js"></script>
+        <script src="js/angular-kendo.js"></script>
         <script src="js/main.js"></script>
         <script src="js/Controllers/MainController.js"></script>
         <script src="js/Controllers/FormController.js"></script>
@@ -72,6 +74,10 @@ under the License.
                         <td>
                             <select type="text" id="ddlSites" ng-model="selectedProject" ng-options="project.PortalKey as project.PortalName for project in projects"
                                     ng-change="getForms()">
+                                <option value="">--Select Project--</option>
+                            </select>
+                            <select type="text" id="ddlSitesDup" ng-model="selectedProject"
+                                    ng-change="getForms()" kendo-drop-down-list>
                                 <option value="">--Select Project--</option>
                             </select>
                         </td>

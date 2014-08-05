@@ -40,7 +40,10 @@ app.controller("FDCntrl", function ($scope, $http) {
                                            params: {userName: $scope.userName},
                                        }).
                 success(function(data) {
-                    $scope.projects = data;
+                    $scope.projects = new kendo.data.ObservableArray([]);//data;
+                    for(var i = 0; i < data.length; i++){
+                    	$scope.projects.push(data[i]);
+                    }
                 });
             }
             else {
